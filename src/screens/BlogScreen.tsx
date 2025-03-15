@@ -50,11 +50,11 @@ const BlogScreen: React.FC<BlogScreenProps> = ({ navigation }) => {
       const querySnapshot = await db.collection('categories').get();
 
       const categoriesList = querySnapshot.docs.map((doc) => ({
-        id: doc.id, 
-        ...doc.data(), 
+        id: doc.id,
+        ...doc.data(),
       }));
       console.log('Categories:', categoriesList);
-      setCategories(categoriesList); 
+      setCategories(categoriesList);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -207,19 +207,20 @@ const BlogScreen: React.FC<BlogScreenProps> = ({ navigation }) => {
         <View style={styles.pickerContainer}>
           <Text style={styles.pickerLabel}>Author:</Text>
           <Picker
-            selectedValue={selectedAuthor}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedAuthor(itemValue)}
+            selectedValue={selectedCategory}
+            style={[styles.picker, { color: '#fff' }]} 
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
           >
-            <Picker.Item label="All Authors" value="all" />
-            {authors.map(author => (
+            <Picker.Item label="All Categories" value="all" />
+            {categories.map((category) => (
               <Picker.Item
-                key={author.id}
-                label={author.username}
-                value={author.id}
+                key={category.id}
+                label={category.name}
+                value={category.id}
               />
             ))}
           </Picker>
+
         </View>
       </View>
 
@@ -235,7 +236,7 @@ const BlogScreen: React.FC<BlogScreenProps> = ({ navigation }) => {
         <FlatList
           data={blogs}
           renderItem={renderBlogItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item, index) => item.id || index.toString()}
           contentContainerStyle={styles.listContainer}
           onEndReached={fetchMoreBlogs}
           onEndReachedThreshold={0.5}
@@ -297,6 +298,8 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
+    backgroundColor: 'gray',
+    color: '#fff'
   },
   listContainer: {
     padding: 16,

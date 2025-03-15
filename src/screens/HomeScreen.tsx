@@ -121,7 +121,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <FlatList
             data={blogs}
             renderItem={renderBlogItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => item.id || index.toString()}
             contentContainerStyle={styles.listContainer}
           />
         )}

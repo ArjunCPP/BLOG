@@ -41,15 +41,15 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
     const fetchCategories = async () => {
       try {
         const querySnapshot = await db.collection('categories').get();
-        
+
         const categoriesList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
         }));
-        
+
         console.log('Categories:', categoriesList);
         setCategories(categoriesList);
-        
+
         if (categoriesList.length > 0) {
           setCategoryId(categoriesList[0].id);
         }
@@ -88,30 +88,30 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
     try {
       const options = {
         mediaType: 'photo',
-        includeBase64: true, 
+        includeBase64: true,
         quality: 0.8,
         maxWidth: 1200,
         maxHeight: 1200,
       };
-  
+
       const result = await launchImageLibrary(options);
-  
+
       if (result.assets && result.assets.length > 0) {
         const selectedImage = result.assets[0];
-  
+
         if (!selectedImage.uri || !selectedImage.base64) {
           Alert.alert('Error', 'Could not get image data');
           return;
         }
-  
-        const base64Size = (selectedImage.base64.length * 3) / 4 / 1024 / 1024; 
-  
+
+        const base64Size = (selectedImage.base64.length * 3) / 4 / 1024 / 1024;
+
         if (base64Size > 1) {
           Alert.alert('Error', 'Selected image exceeds 1 MB size limit');
           setImage(null);
           return;
         }
-  
+
         console.log('DEBUG: Image selected with URI and base64:', selectedImage.uri);
         setImage(selectedImage);
       }
@@ -120,31 +120,31 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
       Alert.alert('Error', 'Failed to select image');
     }
   };
-  
+
   const uploadImage = async () => {
     if (!image || !image.base64) {
       console.log('DEBUG: No image selected or base64 data missing');
       return null;
     }
-  
+
     setIsUploading(true);
     setUploadProgress(0);
-  
+
     try {
       const timestamp = Date.now();
       const filename = `blog_images/image_${timestamp}.jpg`;
-  
+
       const storageRef = firebase.storage().ref(filename);
-  
+
       const snapshot = await storageRef.putString(image.base64, 'base64', {
         contentType: 'image/jpeg',
       });
-  
+
       console.log('DEBUG: Upload completed:', snapshot);
-  
+
       const downloadURL = await storageRef.getDownloadURL();
       console.log('DEBUG: Download URL:', downloadURL);
-  
+
       setIsUploading(false);
       return downloadURL;
     } catch (error) {
@@ -154,26 +154,26 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
       return null;
     }
   };
-  
+
   const handleCreateBlog = async () => {
     if (!validateForm()) return;
-  
+
     if (!authInstance.currentUser) {
       Alert.alert('Error', 'You must be logged in to create a blog post');
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
-      let imageUrl = 'https://via.placeholder.com/300x200?text=No+Image';
-  
+      let imageUrl = 'https://www.hubspot.com/hs-fs/hubfs/parts-url_1.webp?width=595&name=parts-url_1.webp';
+
       if (image && image.base64) {
-        imageUrl = await uploadImage() || imageUrl; 
+        imageUrl = await uploadImage() || imageUrl;
       }
-  
+
       const category = categories.find((cat) => cat.id === categoryId);
-  
+
       const blogData = {
         title,
         description,
@@ -188,10 +188,10 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
         comments: 0,
         views: 0,
       };
-  
+
       const blogRef = await db.collection('blogs').add(blogData);
       console.log('DEBUG: Blog created with ID:', blogRef.id);
-  
+
       Alert.alert('Success', 'Blog post created successfully!', [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
@@ -202,7 +202,7 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
       setLoading(false);
     }
   };
-  
+
 
   if (fetchingCategories) {
     return (
@@ -268,10 +268,10 @@ const CreateBlogScreen: React.FC<CreateBlogScreenProps> = ({ navigation }) => {
             onValueChange={(itemValue) => setCategoryId(itemValue)}
           >
             {categories.map(category => (
-              <Picker.Item 
-                key={category.id} 
-                label={category.name} 
-                value={category.id} 
+              <Picker.Item
+                key={category.id}
+                label={category.name}
+                value={category.id}
               />
             ))}
           </Picker>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     backgroundColor: '#f0f0f0',
-    position: 'relative',  
+    position: 'relative',
   },
   imagePlaceholder: {
     flex: 1,
@@ -403,6 +403,8 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
+    backgroundColor: 'gray',
+    color: '#fff'
   },
   contentInput: {
     borderWidth: 1,
